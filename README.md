@@ -1,14 +1,14 @@
 # Telco Customer Churn Prediction - Vercel Deployment
 
-This project provides a web interface for predicting customer churn using a Logistic Regression model. It is configured for deployment on Vercel.
+This project provides a web interface for predicting customer churn. It is optimized for serverless deployment on Vercel by using a lightweight inference engine instead of heavy data science libraries.
 
 ## Structure
 
-*   `api/index.py`: The Flask backend that serves the model prediction endpoint.
+*   `api/index.py`: The Flask backend that serves the model prediction endpoint. It performs inference using pure Python/NumPy logic.
 *   `public/index.html`: The frontend UI.
-*   `train_model.py`: Script to train the model and save it as `model.pkl`.
-*   `model.pkl`: The trained model.
-*   `schema.pkl`: Schema of the features used.
+*   `train_model.py`: Script to train the Scikit-Learn model and save it as `model.pkl`.
+*   `export_model.py`: Script to extract parameters from `model.pkl` to `model.json`.
+*   `model.json`: The exported model parameters used by the API.
 
 ## Local Setup
 
@@ -16,10 +16,13 @@ This project provides a web interface for predicting customer churn using a Logi
     ```bash
     pip install -r requirements.txt
     ```
+    *Note: `requirements.txt` only contains runtime dependencies (`flask`). To train the model, you need `pandas`, `scikit-learn`, `openpyxl`, `joblib` installed manually.*
 
-2.  Train the model (if `model.pkl` is missing or you want to retrain):
+2.  Train and Export (if needed):
     ```bash
+    pip install pandas scikit-learn openpyxl joblib
     python train_model.py
+    python export_model.py
     ```
 
 3.  Run the API locally:
@@ -32,8 +35,8 @@ This project provides a web interface for predicting customer churn using a Logi
 
 1.  Push this repository to GitHub/GitLab/Bitbucket.
 2.  Import the project in Vercel.
-3.  Vercel will automatically detect the configuration in `vercel.json` and deploy the Python serverless function.
-4.  Ensure `model.pkl` and `schema.pkl` are included in the repository (they should be unless ignored).
+3.  Vercel will automatically detect the configuration in `vercel.json`.
+4.  Ensure `model.json` is committed to the repository.
 
 ## API Usage
 
