@@ -1,0 +1,8 @@
+
+*.pdf
+*.xlsx
+.git
+.gitignore
+tests
+train_model.py
+README.md

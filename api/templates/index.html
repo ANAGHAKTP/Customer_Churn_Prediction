@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Churn Prediction AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-primary: #1a202c;
+            --text-secondary: #4a5568;
+            --accent: #667eea;
+            --danger: #e53e3e;
+            --success: #38a169;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary-gradient);
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px 20px;
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0 0 10px 0;
+            letter-spacing: -0.02em;
+        }
+
+        p.subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .form-section {
+            grid-column: 1 / -1;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #edf2f7;
+            padding-bottom: 10px;
+        }
+
+        .form-section h3 {
+            color: var(--accent);
+            font-size: 1.2rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: transform 0.2s;
+        }
+
+        .form-group:hover {
+            transform: translateY(-2px);
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        select, input {
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .actions {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 16px;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        #submitBtn {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        #submitBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        #submitBtn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .secondary {
+            background: #e2e8f0;
+            color: var(--text-secondary);
+        }
+
+        .secondary:hover {
+            background: #cbd5e0;
+            color: var(--text-primary);
+        }
+
+        #result {
+            grid-column: 1 / -1;
+            margin-top: 30px;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 700;
+            display: none;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .churn {
+            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+            color: var(--danger);
+            border: 1px solid #feb2b2;
+        }
+
+        .no-churn {
+            background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+            color: var(--success);
+            border: 1px solid #9ae6b4;
+        }
+
+        /* Custom Scrollbar for the page */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Customer Churn AI</h1>
+        <p class="subtitle">Predict customer retention with advanced machine learning</p>
+    </header>
+
+    <form id="churnForm">
+        
+        <div class="form-section">
+            <h3>👤 Demographics</h3>
+        </div>
+
+        <div class="form-group">
+            <label>Gender</label>
+            <select name="Gender">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Senior Citizen</label>
+            <select name="Senior Citizen">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Partner</label>
+            <select name="Partner">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Dependents</label>
+            <select name="Dependents">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+            </select>
+        </div>
+
+        <div class="form-section">
+            <h3>📡 Services</h3>
+        </div>
+
+        <div class="form-group">
+            <label>Tenure (Months)</label>
+            <input type="number" name="Tenure Months" min="0" step="1" required placeholder="e.g. 12">
+        </div>
+        <div class="form-group">
+            <label>Phone Service</label>
+            <select name="Phone Service">
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Multiple Lines</label>
+            <select name="Multiple Lines">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+                <option value="No phone service">No phone service</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Internet Service</label>
+            <select name="Internet Service">
+                <option value="DSL">DSL</option>
+                <option value="Fiber optic">Fiber optic</option>
+                <option value="No">No</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Online Security</label>
+            <select name="Online Security">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+                <option value="No internet service">No internet service</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Online Backup</label>
+            <select name="Online Backup">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+                <option value="No internet service">No internet service</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Device Protection</label>
+            <select name="Device Protection">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+                <option value="No internet service">No internet service</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Tech Support</label>
+            <select name="Tech Support">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+                <option value="No internet service">No internet service</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Streaming TV</label>
+            <select name="Streaming TV">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+                <option value="No internet service">No internet service</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Streaming Movies</label>
+            <select name="Streaming Movies">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+                <option value="No internet service">No internet service</option>
+            </select>
+        </div>
+
+        <div class="form-section">
+            <h3>💳 Billing</h3>
+        </div>
+
+        <div class="form-group">
+            <label>Contract</label>
+            <select name="Contract">
+                <option value="Month-to-month">Month-to-month</option>
+                <option value="One year">One year</option>
+                <option value="Two year">Two year</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Paperless Billing</label>
+            <select name="Paperless Billing">
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Payment Method</label>
+            <select name="Payment Method">
+                <option value="Electronic check">Electronic check</option>
+                <option value="Mailed check">Mailed check</option>
+                <option value="Bank transfer (automatic)">Bank transfer (automatic)</option>
+                <option value="Credit card (automatic)">Credit card (automatic)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Monthly Charges ($)</label>
+            <input type="number" name="Monthly Charges" step="0.01" required placeholder="0.00">
+        </div>
+        <div class="form-group">
+            <label>Total Charges ($)</label>
+            <input type="number" name="Total Charges" step="0.01" required placeholder="0.00">
+        </div>
+
+        <div class="actions">
+            <button type="submit" id="submitBtn">✨ Predict Churn Risk</button>
+            <button type="button" class="secondary" id="fillBtn">🎲 Load Example</button>
+        </div>
+    </form>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    document.getElementById('fillBtn').addEventListener('click', () => {
+        // Randomize some values for variety if desired, but here's a standard case
+        const example = {
+            "Gender": "Male",
+            "Senior Citizen": "No",
+            "Partner": "No",
+            "Dependents": "No",
+            "Tenure Months": 2,
+            "Phone Service": "Yes",
+            "Multiple Lines": "No",
+            "Internet Service": "DSL",
+            "Online Security": "Yes",
+            "Online Backup": "Yes",
+            "Device Protection": "No",
+            "Tech Support": "No",
+            "Streaming TV": "No",
+            "Streaming Movies": "No",
+            "Contract": "Month-to-month",
+            "Paperless Billing": "Yes",
+            "Payment Method": "Mailed check",
+            "Monthly Charges": 53.85,
+            "Total Charges": 108.15
+        };
+
+        const form = document.getElementById('churnForm');
+        for (const [key, value] of Object.entries(example)) {
+            const input = form.elements[key];
+            if (input) input.value = value;
+        }
+    });
+
+    document.getElementById('churnForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        const resultDiv = document.getElementById('result');
+        const originalText = btn.textContent;
+
+        btn.disabled = true;
+        btn.textContent = '🔮 Analyzing...';
+        resultDiv.style.display = 'none';
+
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData.entries());
+
+        try {
+            const response = await fetch('/api/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                const prob = (result.churn_probability * 100).toFixed(1);
+                const isChurn = result.churn_prediction === 1;
+
+                resultDiv.innerHTML = `
+                    <div style="font-size: 3rem; margin-bottom: 10px;">${isChurn ? '⚠️' : '✅'}</div>
+                    <div>Churn Probability: ${prob}%</div>
+                    <div style="font-size: 1rem; opacity: 0.8; margin-top: 5px;">${isChurn ? 'High Risk: Customer likely to leave' : 'Low Risk: Customer likely to stay'}</div>
+                `;
+                resultDiv.className = isChurn ? 'churn' : 'no-churn';
+                resultDiv.style.display = 'block';
+                
+                // Scroll to result
+                resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else {
+                throw new Error(result.error || 'Unknown error occurred');
+            }
+        } catch (error) {
+            resultDiv.textContent = '❌ Error: ' + error.message;
+            resultDiv.className = 'churn';
+            resultDiv.style.display = 'block';
+        } finally {
+            btn.disabled = false;
+            btn.textContent = originalText;
+        }
+    });
+</script>
+
+</body>
+</html>

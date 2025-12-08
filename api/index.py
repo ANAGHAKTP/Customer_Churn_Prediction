@@ -1,17 +1,18 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, render_template
+
 import joblib
 import pandas as pd
 import os
 
-app = Flask(__name__, static_folder='../public')
+app = Flask(__name__)
 
 model = None
 schema = None
 
 def load_model():
     global model, schema
-    model_path = os.path.join(os.path.dirname(__file__), '..', 'model.pkl')
-    schema_path = os.path.join(os.path.dirname(__file__), '..', 'schema.pkl')
+    model_path = os.path.join(os.path.dirname(__file__), 'model.pkl')
+    schema_path = os.path.join(os.path.dirname(__file__), 'schema.pkl')
 
     if os.path.exists(model_path):
         model = joblib.load(model_path)
@@ -20,7 +21,7 @@ def load_model():
 
 @app.route('/')
 def index():
-    return send_from_directory(app.static_folder, 'index.html')
+    return render_template('index.html')
 
 @app.route('/api/predict', methods=['POST'])
 def predict():
