@@ -33,7 +33,7 @@ This project provides a web interface for predicting customer churn using a Logi
 1.  Push this repository to GitHub/GitLab/Bitbucket.
 2.  Import the project in Vercel.
 3.  Vercel will automatically detect the configuration in `vercel.json` and deploy the Python serverless function.
-4.  Ensure `model.pkl` and `schema.pkl` are included in the repository (they should be unless ignored).
+4.  Ensure `model.pkl` and `schema.pkl` are included in the repository .
 
 ## API Usage
 
