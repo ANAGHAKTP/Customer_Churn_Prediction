@@ -1,4 +1,4 @@
-# Telco Customer Churn Prediction - Vercel Deployment
+# Telco Customer Churn Prediction 
 
 This project provides a web interface for predicting customer churn using a Logistic Regression model. It is configured for deployment on Vercel.
 
